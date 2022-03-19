@@ -1,0 +1,20 @@
+{
+  "name": "nodejs_mongodb_assignment",
+  "version": "1.0.0",
+  "description": "NodeJS_MongoDB_Assignment",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "NodeJS",
+    "MongoDB",
+    "Assignment"
+  ],
+  "author": "Tatiana Millsap",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3"
+  }
+}
