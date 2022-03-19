@@ -17,7 +17,6 @@ router.post("/", (req,res,next) => {
         artist: req.body.artist
     });
 
-//write to the db
     newSong.save()
         .then(result => {
             console.log(result);
