@@ -10,51 +10,60 @@ router.get("/", (req,res,next) => {
 });
 
 router.post("/", (req,res,next) => {
-    
-    const newSong = new Song({
-        _id: mongoose.Types.ObjectId(),
-        title: req.body.title,
-        artist: req.body.artist
-    });
 
-    newSong.save()
-        .then(result => {
-            console.log(result);
-            res.status(200).json({
-                message: "Song Saved",
-                song: {
-                    title: req.body.title,
-                    artist: req.body.artist,
-                    id: result._id,
-                    metadata: {
-                        method: req.method,
-                        host: req.hostname
-                    }
-                }
+    Song.find({
+        title: req.body.title, 
+        artist: req.body.artist
+    })
+    .exec()
+    .then(result => {
+        console.log(result);
+        if(result.length > 0){
+            return res.status(406).json({
+                message: "Song is alread cataloged"
             })
-        })
-        .catch(err => {
-            console.error(err.message);
-            res.status(500).json({
-                error: {
-                    message: err.message
-                }
+        }
+        const newSong = new Song({
+            _id: mongoose.Types.ObjectId(),
+            title: req.body.title,
+            artist: req.body.artist
+        });
+    
+        newSong.save()
+            .then(result => {
+                console.log(result);
+                res.status(200).json({
+                    message: "Song Saved",
+                    song: {
+                        title: result.title,
+                        artist: result.artist,
+                        id: result._id,
+                        metadata: {
+                            method: req.method,
+                            host: req.hostname
+                        }
+                    }
+                })
+            })
+            .catch(err => {
+                console.error(err.message);
+                res.status(500).json({
+                    error: {
+                        message: "Unable to save song with title:  + req.body.title"
+                    }
+                });
             });
         });
-    });
+});
 
 router.get("/:songId", (req,res,next) => {
     const songId = req.params.songId;
 
-    const findSong = {
-        title: req.body.title,
-        artist: req.body.artist
-    };
     Song.findById({
         _id: songId
-        }, { 
-            $set: findSong  
-        }).then(result => {
+        })
+        .then(result => {
+            console.log(result);
             res.status(200).json({
                 message: "Found Song",
                 song: {
