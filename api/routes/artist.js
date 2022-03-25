@@ -2,10 +2,11 @@ const express = require("express");
 const artist = require("../models/artist");
 const router = express.Router();
 const mongoose = require("mongoose");
+const Messages = require("../../messages/messages");
 
 router.get("/", (req,res,next) => {
     res.json({
-        message: "Artist - GET"
+        message: Messages.artist_get
     });
 });
 
@@ -19,7 +20,7 @@ router.post("/", (req,res,next) => {
         console.log(result);
         if(result.length > 0){
             return res.status(406).json({
-                message: "Artist is already catalogued"
+                message: Messages.artist_dup_post
             })
         }
         const newArtist = new artist({
@@ -32,7 +33,7 @@ router.post("/", (req,res,next) => {
             .then(result => {
                 console.log(result);
                 res.status(200).json({
-                    message: "Artist Saved",
+                    message: Messages.artist_saved,
                     song: {
                         title: result.title,
                         artist: result.artist,
@@ -48,7 +49,7 @@ router.post("/", (req,res,next) => {
                 console.error(err.message);
                 res.status(500).json({
                     error: {
-                        message: "Unable to save Artist: + req.body.title"
+                        message: Messages.artist_not_saved
                     }
                 });
             });
@@ -62,11 +63,18 @@ router.get("/:artistId", (req,res,next) => {
     artist.findById({
         _id: artistId
     })
+    .populate("artist", "title artist")
     .then(result => {
         console.log(result);
+        if (!artist) {
+            console.log(artist);
+            return res.status(404).json({
+                message: Messages.artist_not_found
+            })
+        }
         res.status(200).json({
-            message: "Found Artist",
-            song: {
+            message: Messages.artist_get_byID,
+            artist: {
                 title: result.title, 
                 artist: result.artist, 
                 id: result._id
@@ -100,12 +108,12 @@ router.patch("/:artistId", (req,res,next) => {
         $set: updatedArtist
     })
     .select("name _id")
-    .populate("song", "title artist")
+    .populate("artist", "title artist")
     .exec()
     .then(result => {
         res.status(200).json({
-            message: "Updated Artist",
-            song: {
+            message: Messages.artist_update_byID,
+            artist: {
                 title: result.title, 
                 author: result.author, 
                 id: result._id
@@ -145,7 +153,7 @@ router.delete("/:artistId", (req,res,next) => {
         $set: deletedArtist
     })
     .select("name _id")
-    .populate("song", "title artist")
+    .populate("artist", "title artist")
     .exec()
     .then(result => {
         res.status(200).json({
