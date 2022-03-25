@@ -20,7 +20,7 @@ router.post("/", (req,res,next) => {
         console.log(result);
         if(result.length > 0){
             return res.status(406).json({
-                message: "Song is alread catalogued"
+                message: "Song is already catalogued"
             })
         }
         const newSong = new Song({

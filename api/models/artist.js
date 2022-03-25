@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const artistSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     title: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         ref: "Song",  
         required: true
     },
